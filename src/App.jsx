@@ -1,12 +1,14 @@
+import { Provider } from "react-redux";
 import "./App.css";
 import Layout from "./components/Layout/Layout";
+import { store } from "./redux/store,js";
 
-function App() {
+export default function App() {
   return (
     <div className='App'>
-      <Layout />
+      <Provider store={store}>
+        <Layout />
+      </Provider>
     </div>
   );
 }
-
-export default App;

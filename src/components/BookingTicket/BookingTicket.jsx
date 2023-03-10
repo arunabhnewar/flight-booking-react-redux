@@ -1,13 +1,74 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { v4 } from "uuid";
 import fromImg from "../../assets/icons/Frame.svg";
 import guestImg from "../../assets/icons/Vector (1).svg";
 import baggageImg from "../../assets/icons/Vector (3).svg";
+import { bookingTicketAction } from "../../redux/ticketDetails/ticketActions";
 
 const BookingTicket = () => {
+  const [formData, setFormData] = useState({
+    from: "",
+    to: "",
+    date: "",
+    guest: "",
+    classType: "",
+    id: "",
+  });
+
+  // Use Selector
+  //Extract State from root reducer
+  const collectedTicket = useSelector(state => state.ticketDetails);
+
+  // Dispatch
+  const dispatch = useDispatch();
+
+  // Inputs Values Handle
+  const inputValuesHandle = e => {
+    let value = e.target.value;
+
+    if (e.target.name === "from") {
+      setFormData({ ...formData, from: value });
+    } else if (e.target.name === "to") {
+      setFormData({ ...formData, to: value });
+    } else if (e.target.name === "date") {
+      setFormData({ ...formData, date: value });
+    } else if (e.target.name === "guests") {
+      setFormData({ ...formData, guest: value });
+    } else if (e.target.name === "ticketclassName") {
+      setFormData({ ...formData, classType: value });
+    }
+  };
+
+  // OnSubmit Function
+  const ticketBookingHandler = e => {
+    e.preventDefault();
+    dispatch(bookingTicketAction({ ...formData, id: v4() }));
+    resetFormData();
+  };
+
+  // Reset Form after ticket booked
+  function resetFormData() {
+    setFormData({
+      ...formData,
+      from: "",
+      to: "",
+      date: "",
+      guest: "",
+      classType: "",
+      id: "",
+    });
+  }
+
+  // Extract data from ticket info state
+  const { from, to, date, guest, classType } = formData;
+
   return (
     <div className='mt-[160px] mx-4 md:mt-[160px] relative'>
       <div className='bg-white rounded-md max-w-6xl w-full mx-auto'>
-        <form className='first-hero lws-inputform'>
+        <form
+          onSubmit={ticketBookingHandler}
+          className='first-hero lws-inputform'>
           {/*  From  */}
           <div className='des-from'>
             <p>Destination From</p>
@@ -17,6 +78,8 @@ const BookingTicket = () => {
                 className='outline-none px-2 py-2 w-full'
                 name='from'
                 id='lws-from'
+                value={from}
+                onChange={e => inputValuesHandle(e)}
                 required>
                 <option value='' hidden>
                   Please Select
@@ -38,6 +101,8 @@ const BookingTicket = () => {
                 className='outline-none px-2 py-2 w-full'
                 name='to'
                 id='lws-to'
+                value={to}
+                onChange={e => inputValuesHandle(e)}
                 required>
                 <option value='' hidden>
                   Please Select
@@ -58,6 +123,8 @@ const BookingTicket = () => {
               className='outline-none px-2 py-2 w-full date'
               name='date'
               id='lws-date'
+              value={date}
+              onChange={e => inputValuesHandle(e)}
               required
             />
           </div>
@@ -71,6 +138,8 @@ const BookingTicket = () => {
                 className='outline-none px-2 py-2 w-full'
                 name='guests'
                 id='lws-guests'
+                value={guest}
+                onChange={e => inputValuesHandle(e)}
                 required>
                 <option value='' hidden>
                   Please Select
@@ -92,6 +161,8 @@ const BookingTicket = () => {
                 className='outline-none px-2 py-2 w-full'
                 name='ticketclassName'
                 id='lws-ticketclassName'
+                value={classType}
+                onChange={e => inputValuesHandle(e)}
                 required>
                 <option value='' hidden>
                   Please Select
@@ -102,17 +173,17 @@ const BookingTicket = () => {
             </div>
           </div>
 
-          <button className='addCity' type='submit' id='lws-addCity'>
+          <button className='addCity' type='submit' id='lws-addCity' disabled={collectedTicket.length >=3 ? true: false}>
             <svg
               width='15px'
               height='15px'
               fill='none'
               viewBox='0 0 24 24'
-              stroke-width='2'
+              strokeWidth='2'
               stroke='currentColor'>
               <path
-                stroke-linecap='round'
-                stroke-linejoin='round'
+                strokeLinecap='round'
+                strokeLinejoin='round'
                 d='M12 4.5v15m7.5-7.5h-15'
               />
             </svg>
